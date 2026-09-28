@@ -1,5 +1,15 @@
 # Nutzung / Usage
 
+## Anmeldung
+
+Jeder OneNote-Node hat oben das Feld **Authentication**:
+
+- **OAuth2 (Redirect Login)** → Credential *OneNote OAuth2 API* (n8n über `localhost` oder HTTPS erreichbar)
+- **Device Login (No Redirect URL)** → Credential *OneNote Device Login API* (n8n auf Server/LAN-IP, einmalig mit dem
+  Node *OneNote Login Helper* anmelden)
+
+Einrichtung: [setup-azure.md](setup-azure.md).
+
 ## Seiten anlegen
 
 **Page → Create**: Abschnitt wählen, Titel, Inhalt und Format (*Plain Text*, *Markdown*, *HTML*).

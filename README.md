@@ -63,8 +63,15 @@ npm run dev       # n8n mit Hot-Reload (n8n-node dev)
 npm run release   # Version anheben, Tag setzen, veröffentlichen (release-it)
 ```
 
-Veröffentlichen: `npm login` und `npm publish` (der Paketname muss mit `n8n-nodes-` beginnen). Für die
-n8n-Verifizierung wird das Paket über GitHub Actions mit npm-Provenance veröffentlicht.
+Veröffentlichen von Hand: `npm run build` und `npm publish --ignore-scripts` (das direkte `npm publish` blockiert
+`n8n-node prerelease` absichtlich).
+
+Veröffentlichen über GitHub (mit npm-Provenance, nötig für die n8n-Verifizierung):
+
+1. Einmalig auf npmjs.com beim Paket *Settings → Trusted Publisher → GitHub Actions* eintragen:
+   Repository `Petopp/n8n-onenote-system`, Workflow `publish.yml`.
+2. Version in `package.json` und `CHANGELOG.md` anheben, nach `main` pushen.
+3. Auf GitHub ein Release mit Tag `vX.Y.Z` erstellen – der Workflow *Publish* baut, testet und veröffentlicht.
 
 ## Grenzen der OneNote-API
 

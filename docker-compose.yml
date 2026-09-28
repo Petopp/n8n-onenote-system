@@ -1,6 +1,9 @@
 # Local n8n with this package mounted as a custom node.
 #   npm install && npm run build
 #   docker compose up -d      -> http://localhost:5678
+# Note: nodes loaded from the custom folder get the type prefix "CUSTOM." instead of
+# "n8n-nodes-onenote-system.", so the example workflows must have their nodes re-selected.
+# For normal use install the package via Settings -> Community Nodes instead.
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest

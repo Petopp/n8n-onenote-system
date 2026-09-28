@@ -1,0 +1,28 @@
+# Publishes to npm with provenance when a GitHub release is published
+# (required for n8n community node verification).
+# One-time setup on npmjs.com: package settings -> Trusted Publisher -> GitHub Actions,
+# repository Petopp/n8n-onenote-system, workflow file publish.yml.
+name: Publish
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm install --no-audit --no-fund  # npm ci trips over an npm lock-file bug (nested "ignore")
+      - run: npm run lint
+      - run: npm test
+      - run: npm publish --provenance --access public --ignore-scripts

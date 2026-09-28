@@ -3,6 +3,9 @@
 ## 0.2.1
 
 - Docs and error hints: Device Login needs the Azure platform "Mobile and desktop applications" (AADSTS70002).
+- Docs: complete device login steps, where to find "Allow public client flows", authentication field in usage guide.
+- Package no longer ships `tsconfig.tsbuildinfo` and a copy of `package.json` in `dist/`.
+- CI fixed (lock file); new GitHub Actions workflow `publish.yml` publishes with npm provenance.
 
 ## 0.2.0
 
