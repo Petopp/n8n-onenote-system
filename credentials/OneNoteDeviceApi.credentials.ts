@@ -36,7 +36,7 @@ export class OneNoteDeviceApi implements ICredentialType {
 			default: '',
 			required: true,
 			description:
-				'Application (client) ID of your Azure app registration. "Allow public client flows" must be enabled.',
+				'Application (client) ID of your Azure app registration. It needs the platform "Mobile and desktop applications" and "Allow public client flows" enabled.',
 		},
 		{
 			displayName: 'Account Type',

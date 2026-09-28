@@ -63,9 +63,14 @@ Für n8n hinter einer LAN-IP oder ohne HTTPS. Statt der Weiterleitung nutzt du d
 (wie bei Smart-TV-Apps). Der Node **OneNote Login Helper** erzeugt dabei einmalig ein Refresh-Token; das Credential
 **OneNote Device Login API** erneuert es danach selbständig.
 
-**Azure einmalig anpassen:** in der App-Registrierung → **Authentifizierung** → **Erweiterte Einstellungen** →
-*Öffentliche Clientflows zulassen* = **Ja** → Speichern. Ein Client Secret und eine Redirect-URI werden nicht benötigt.
-Berechtigungen wie oben (`Notes.ReadWrite`, `offline_access`, `User.Read`, optional `Files.ReadWrite`).
+**Azure einmalig anpassen** (App-Registrierung → **Authentifizierung**):
+
+1. **Plattform hinzufügen** → **Mobil- und Desktopanwendungen** → `https://login.microsoftonline.com/common/oauth2/nativeclient`
+   ankreuzen → **Konfigurieren**. (Ohne diese Plattform kommt bei privaten Konten `AADSTS70002 … must be marked as 'mobile'`.)
+2. Unter **Erweiterte Einstellungen** *Öffentliche Clientflows zulassen* = **Ja** → **Speichern**.
+
+Ein Client Secret und eine funktionierende Redirect-URI werden für den Device-Login nicht benötigt. Berechtigungen wie oben
+(`Notes.ReadWrite`, `offline_access`, `User.Read`, optional `Files.ReadWrite`). Nach dem Speichern ein paar Minuten warten.
 
 **Login durchführen:**
 
@@ -86,7 +91,8 @@ im Credential; sobald der Workflow gelegentlich läuft, bleibt der Login bestehe
 | Meldung | Ursache / Lösung |
 | --- | --- |
 | `AADSTS50011` Redirect-URI stimmt nicht | URI in Azure exakt wie in n8n angezeigt (OAuth Redirect URL) eintragen; bei IP-Adresse: Device-Login nutzen (s. o.) |
-| `invalid_client` beim Device-Login | In Azure *Öffentliche Clientflows zulassen* auf **Ja** stellen |
+| `AADSTS70002` … must be marked as 'mobile' | Plattform *Mobil- und Desktopanwendungen* (nativeclient-URI) hinzufügen **und** *Öffentliche Clientflows zulassen* = Ja |
+| `invalid_client` beim Device-Login | Wie oben: Mobil-/Desktop-Plattform und öffentliche Clientflows in Azure aktivieren |
 | Finish Login: *Not confirmed yet* | Code im Browser noch nicht bestätigt: Adresse öffnen, Code eingeben, dann *Finish Login* erneut ausführen |
 | `AADSTS700016` / `unauthorized_client` | Kontotyp der App passt nicht zum gewählten *Account Type* |
 | `AADSTS7000218` | Client-Secret falsch oder abgelaufen (Wert, nicht die Secret-ID kopieren) |
@@ -109,8 +115,8 @@ im Credential; sobald der Workflow gelegentlich läuft, bleibt der Login bestehe
 Azure only allows `http://` for `localhost`; everything else needs HTTPS with a hostname (no IP address). n8n builds the
 redirect URL from `N8N_EDITOR_BASE_URL`; it cannot be changed in a credential or node. Options:
 
-- **Device login (recommended):** no redirect URI at all. In Azure enable *Authentication → Advanced settings → Allow public
-  client flows = Yes*. In n8n run the **OneNote Login Helper** node (*Start Login*, open the address, enter the code,
+- **Device login (recommended):** no redirect URI at all. In Azure add the platform *Mobile and desktop applications* (nativeclient URI) and enable *Authentication → Advanced settings →
+  Allow public client flows = Yes*. In n8n run the **OneNote Login Helper** node (*Start Login*, open the address, enter the code,
   *Finish Login*), put the refresh token and client ID into the credential **OneNote Device Login API**, and select
   *Authentication: Device Login* in the OneNote nodes. Delete the login execution afterwards.
 - **SSH tunnel for the first login:** `ssh -L 5678:localhost:5678 user@server`, set `N8N_EDITOR_BASE_URL=http://localhost:5678`

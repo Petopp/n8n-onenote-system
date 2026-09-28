@@ -108,7 +108,7 @@ export class OneNoteLogin implements INodeType {
 			if (r.error) {
 				throw new NodeOperationError(
 					this.getNode(),
-					`${String(r.error_description ?? r.error)} - check the Client ID and that "Allow public client flows" is enabled.`,
+					`${String(r.error_description ?? r.error)} - check the Client ID, that the app has the platform "Mobile and desktop applications" and that "Allow public client flows" is enabled.`,
 				);
 			}
 			return [

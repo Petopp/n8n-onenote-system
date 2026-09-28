@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Docs and error hints: Device Login needs the Azure platform "Mobile and desktop applications" (AADSTS70002).
+
 ## 0.2.0
 
 - New authentication option **Device Login** (credential *OneNote Device Login API* + node *OneNote Login Helper*):
