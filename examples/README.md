@@ -10,3 +10,4 @@ Credential und Notizbuch/Abschnitt auswählen.
 | `03-new-page-trigger.json` | Trigger: neue Seite → Inhalt als Text weiterverarbeiten |
 | `04-read-page-with-media.json` | Seite lesen inkl. Bilder/Audio als Binärdaten |
 | `05-image-to-note.json` | Webhook mit Datei-Upload (Bild/Audio/Video) → Seite |
+| `06-device-login.json` | Einmaliger Geräte-Code-Login (Refresh-Token für das Credential *OneNote Device Login API*) |

@@ -1,0 +1,49 @@
+{
+  "name": "OneNote: Device login",
+  "nodes": [
+    {
+      "id": "l1",
+      "name": "Manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "l2",
+      "name": "OneNote Login Helper",
+      "type": "n8n-nodes-onenote-system.oneNoteLogin",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "operation": "start",
+        "clientId": "",
+        "tenant": "consumers",
+        "enableOneDrive": true
+      }
+    }
+  ],
+  "connections": {
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "OneNote Login Helper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

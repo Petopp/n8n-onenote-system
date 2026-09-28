@@ -13,6 +13,7 @@ ergänzen – mit Text, Markdown, HTML, Bildern, Audio, Dateien und Videos – i
 | **Section** | Liste (optional pro Notizbuch), Details, Erstellen |
 | **Page** | Erstellen, Lesen (HTML/Text/Metadaten, optional inkl. Medien), Liste mit Filtern, Ergänzen/Ersetzen, Kopieren, Verschieben, Löschen |
 | **Media** | Bilder/Audio/Dateien einer Seite als Binärdaten herunterladen · Binärdaten an eine Seite anhängen |
+| **Login-Helfer** | Node *OneNote Login Helper*: Geräte-Code-Login ohne Redirect-URI (für Server/LAN) |
 | **Trigger** | Polling: neue bzw. geänderte Seiten (gesamt, pro Notizbuch oder pro Abschnitt) |
 
 - Notizbuch, Abschnitt und Seite wählst du per **Dropdown** (mit Suche) oder per **ID/Expression**; jedes Ergebnis
@@ -41,6 +42,11 @@ docker compose up -d          # n8n auf http://localhost:5678
 Für private Konten ist eine (kostenlose) App-Registrierung in Azure nötig – Schritt für Schritt in
 [docs/setup-azure.md](docs/setup-azure.md). Kurz: Redirect-URI `http://localhost:5678/rest/oauth2-credential/callback`,
 Client-ID + Client-Secret im n8n-Credential **OneNote OAuth2 API** eintragen, *Connect* klicken.
+
+**n8n auf einem Server oder ohne HTTPS?** Azure erlaubt `http://` nur für `localhost`. Dafür gibt es den
+**Device-Login** (ohne Redirect-URI, ohne Client Secret) mit dem Node *OneNote Login Helper* und dem Credential
+*OneNote Device Login API*; die Alternative ist ein SSH-Tunnel – beides in
+[docs/setup-azure.md](docs/setup-azure.md#n8n-läuft-nicht-auf-localhost-server-lan-ip-kein-https).
 
 ## Nutzung
 
@@ -78,6 +84,7 @@ text, Markdown, HTML, images, audio, files and videos – in both directions.
 - Resources: Notebook, Section, Page, Media, plus a polling **OneNote Trigger** (new/modified pages).
 - Pick notebook/section/page from a searchable list or by ID/expression; outputs contain IDs and web URLs.
 - Images are embedded, audio/PDF/other files attached; videos are uploaded to OneDrive and linked (OneNote cannot embed video).
+- Personal accounts on a server/LAN IP: use the *Device Login* authentication (no redirect URI), see the setup guide.
 - Install via *Settings → Community Nodes* (`n8n-nodes-onenote-system`) or build locally (`npm install && npm run build`,
   `docker compose up -d`).
 - Setup of the Azure app registration: [docs/setup-azure.md](docs/setup-azure.md). Usage: [docs/usage.md](docs/usage.md).
