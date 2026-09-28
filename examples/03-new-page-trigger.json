@@ -1,0 +1,75 @@
+{
+  "name": "OneNote: New page trigger",
+  "nodes": [
+    {
+      "id": "c1",
+      "name": "OneNote Trigger",
+      "type": "n8n-nodes-onenote-system.oneNoteTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "event": "pageCreated",
+        "scope": "all",
+        "content": "text",
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 5,
+              "unit": "minutes"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "oneNoteOAuth2Api": {
+          "id": "",
+          "name": "OneNote account"
+        }
+      }
+    },
+    {
+      "id": "c2",
+      "name": "Process",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "summary",
+              "value": "={{ $json.title + ' (' + $json.notebookName + ')' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "OneNote Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

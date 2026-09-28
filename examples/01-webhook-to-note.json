@@ -1,0 +1,66 @@
+{
+  "name": "OneNote: Webhook to note",
+  "nodes": [
+    {
+      "id": "a1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "onenote-note",
+        "responseMode": "lastNode"
+      },
+      "webhookId": "a1"
+    },
+    {
+      "id": "a2",
+      "name": "Create page",
+      "type": "n8n-nodes-onenote-system.oneNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "resource": "page",
+        "operation": "create",
+        "sectionId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "title": "={{ $json.body.title }}",
+        "contentFormat": "markdown",
+        "content": "={{ $json.body.text }}"
+      },
+      "credentials": {
+        "oneNoteOAuth2Api": {
+          "id": "",
+          "name": "OneNote account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "name": "n8n-nodes-onenote-system",
+  "version": "0.1.0",
+  "description": "n8n community nodes for Microsoft OneNote (personal accounts): notebooks, sections, pages, images, audio, files and videos - read and write, plus a polling trigger.",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "onenote",
+    "microsoft",
+    "graph",
+    "notes"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/petopp/n8n-onenote-system",
+  "author": {
+    "name": "petopp",
+    "email": "petop@posteo.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petopp/n8n-onenote-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petopp/n8n-onenote-system/issues"
+  },
+  "engines": {
+    "node": ">=20.15"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "test": "n8n-node build && node --test test/*.test.js",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/OneNoteOAuth2Api.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/OneNote/OneNote.node.js",
+      "dist/nodes/OneNote/OneNoteTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "*",
+    "eslint": "9.32.0",
+    "prettier": "3.6.2",
+    "release-it": "^19.0.4",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

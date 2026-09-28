@@ -1,0 +1,73 @@
+{
+  "name": "OneNote: File upload to note",
+  "nodes": [
+    {
+      "id": "e1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "onenote-upload",
+        "responseMode": "lastNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "webhookId": "e1"
+    },
+    {
+      "id": "e2",
+      "name": "Create page",
+      "type": "n8n-nodes-onenote-system.oneNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "resource": "page",
+        "operation": "create",
+        "sectionId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "title": "={{ $json.headers['x-title'] || 'Upload' }}",
+        "contentFormat": "text",
+        "content": "Uploaded via n8n",
+        "binaryProperties": "data",
+        "options": {
+          "videoHandling": "onedrive"
+        }
+      },
+      "credentials": {
+        "oneNoteOAuth2Api": {
+          "id": "",
+          "name": "OneNote account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

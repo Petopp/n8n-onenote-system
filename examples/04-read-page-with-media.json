@@ -1,0 +1,60 @@
+{
+  "name": "OneNote: Read page with media",
+  "nodes": [
+    {
+      "id": "d1",
+      "name": "Manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "d2",
+      "name": "Get page",
+      "type": "n8n-nodes-onenote-system.oneNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "resource": "page",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "contentOutput": "both",
+        "downloadMedia": true
+      },
+      "credentials": {
+        "oneNoteOAuth2Api": {
+          "id": "",
+          "name": "OneNote account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "Get page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
