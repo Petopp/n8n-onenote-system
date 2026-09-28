@@ -26,7 +26,7 @@ export class OneNoteLogin implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Step 1: run "Start Login" and open the shown address. Step 2: enter the code there, then run "Finish Login" and copy the refresh token into the credential. Delete the execution afterwards - the token is a secret.',
+					'Step 1: run "Start Login". Step 2: open the shown address in a browser (e.g. https://www.microsoft.com/link), enter the code, sign in and accept the permissions. Step 3: run "Finish Login" and copy the refresh token into the credential. Delete the execution afterwards - the token is a secret.',
 				name: 'notice',
 				type: 'notice',
 				default: '',

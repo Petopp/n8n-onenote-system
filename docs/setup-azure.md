@@ -88,13 +88,17 @@ Ein Client Secret und eine funktionierende Redirect-URI werden für den Device-L
 **Login durchführen:**
 
 1. Neuen Workflow anlegen, Node **OneNote Login Helper** einfügen (oder `examples/06-device-login.json` importieren).
-2. *Operation:* **Start Login**, *Client ID* eintragen, ausführen. Ausgabe: `verificationUri` (`https://microsoft.com/devicelogin`) und `userCode`.
-3. Die Adresse im Browser öffnen, den Code eingeben, mit dem privaten Konto anmelden und zustimmen.
-4. Im selben Node *Operation* auf **Finish Login** stellen (Device Code kommt automatisch aus Schritt 2) und ausführen.
-   Ausgabe: `refreshToken`.
-5. Credential **OneNote Device Login API** anlegen: *Client ID*, *Refresh Token* einfügen, speichern (der Test lädt ein Notizbuch).
+2. *Operation:* **Start Login**, *Client ID* eintragen, ausführen. Die Ausgabe enthält `verificationUri`, `userCode` und
+   `message`, z. B.: *To sign in, use a web browser to open the page https://www.microsoft.com/link and enter the code ABCD1234 to authenticate.*
+3. **Im Browser die angezeigte Adresse öffnen** (meist `https://www.microsoft.com/link`), den **Code eingeben**, mit dem
+   privaten Konto anmelden und den Berechtigungen **zustimmen** (OneNote, ggf. OneDrive). Der Code gilt ca. 15 Minuten;
+   danach *Start Login* einfach wiederholen.
+4. Im selben Node *Operation* auf **Finish Login** stellen und ausführen. Der *Device Code* kommt automatisch aus Schritt 2
+   und muss vom **letzten** *Start Login*-Lauf stammen. Ausgabe: `refreshToken`. Kommt *Not confirmed yet*, war der Code im
+   Browser noch nicht bestätigt: bestätigen und *Finish Login* erneut ausführen.
+5. Credential **OneNote Device Login API** anlegen: *Client ID* und *Refresh Token* einfügen, speichern (der Test lädt ein Notizbuch).
 6. In den OneNote-Nodes bei *Authentication* **Device Login (No Redirect URL)** wählen und das Credential auswählen.
-7. Die Ausführung des Login-Workflows löschen – das Refresh-Token ist ein Geheimnis.
+7. Die Ausführung des Login-Workflows löschen (*Executions → löschen*) – das Refresh-Token ist ein Geheimnis.
 
 Das Refresh-Token verfällt bei Microsoft nach 90 Tagen ohne Nutzung. n8n speichert bei jeder Erneuerung das neue Token
 im Credential; sobald der Workflow gelegentlich läuft, bleibt der Login bestehen. Nach längerer Pause den Login wiederholen.
@@ -130,8 +134,8 @@ redirect URL from `N8N_EDITOR_BASE_URL`; it cannot be changed in a credential or
 
 - **Device login (recommended):** no redirect URI at all. In Azure (*Authentication*) add the platform *Mobile and desktop applications* (nativeclient URI) and set *Allow public client
   flows = Yes* (new portal: tab *Settings*; old portal: *Advanced settings* at the bottom; or `allowPublicClient: true` in the
-  manifest). In n8n run the **OneNote Login Helper** node (*Start Login*, open the address, enter the code,
-  *Finish Login*), put the refresh token and client ID into the credential **OneNote Device Login API**, and select
+  manifest). In n8n run the **OneNote Login Helper** node (*Start Login*, open the shown address (e.g. https://www.microsoft.com/link), enter the code, sign in and accept the
+  permissions, then *Finish Login*), put the refresh token and client ID into the credential **OneNote Device Login API**, and select
   *Authentication: Device Login* in the OneNote nodes. Delete the login execution afterwards.
 - **SSH tunnel for the first login:** `ssh -L 5678:localhost:5678 user@server`, set `N8N_EDITOR_BASE_URL=http://localhost:5678`
   and `WEBHOOK_URL=http://localhost:5678/`, recreate the container (`docker compose up -d --force-recreate n8n`), open
