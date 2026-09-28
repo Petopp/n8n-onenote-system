@@ -63,11 +63,24 @@ Für n8n hinter einer LAN-IP oder ohne HTTPS. Statt der Weiterleitung nutzt du d
 (wie bei Smart-TV-Apps). Der Node **OneNote Login Helper** erzeugt dabei einmalig ein Refresh-Token; das Credential
 **OneNote Device Login API** erneuert es danach selbständig.
 
-**Azure einmalig anpassen** (App-Registrierung → **Authentifizierung**):
+**Azure einmalig anpassen** (App-Registrierung → links **Authentifizierung**). Die Seite gibt es in zwei Varianten:
 
-1. **Plattform hinzufügen** → **Mobil- und Desktopanwendungen** → `https://login.microsoftonline.com/common/oauth2/nativeclient`
-   ankreuzen → **Konfigurieren**. (Ohne diese Plattform kommt bei privaten Konten `AADSTS70002 … must be marked as 'mobile'`.)
-2. Unter **Erweiterte Einstellungen** *Öffentliche Clientflows zulassen* = **Ja** → **Speichern**.
+*Neue Oberfläche (Reiter oben auf der Seite):*
+
+1. Reiter **Umleitungs-URI-Konfiguration** → **Plattform hinzufügen** → **Mobil- und Desktopanwendungen** →
+   `https://login.microsoftonline.com/common/oauth2/nativeclient` ankreuzen → **Konfigurieren**.
+2. Reiter **Einstellungen** → nach unten scrollen zu **Öffentliche Clientflows zulassen** → **Ja** → **Speichern**.
+
+*Alte Oberfläche (eine lange Seite ohne Reiter):*
+
+1. Unter *Plattformkonfigurationen* → **Plattform hinzufügen** → **Mobil- und Desktopanwendungen** → nativeclient-URI
+   (siehe oben) ankreuzen → **Konfigurieren**.
+2. Ganz nach unten scrollen zu **Erweiterte Einstellungen** → **Öffentliche Clientflows zulassen** → **Ja** → **Speichern**.
+
+*Schalter nicht zu finden?* Links **Manifest** öffnen, `allowPublicClient` suchen, auf `true` setzen (bei älteren Manifesten
+heißt das Feld `isFallbackPublicClient`) und **Speichern**. Die Bezeichnungen weichen je nach Sprache und Portal-Version leicht ab.
+
+Ohne die Mobil-/Desktop-Plattform kommt bei privaten Konten `AADSTS70002 … must be marked as 'mobile'`.
 
 Ein Client Secret und eine funktionierende Redirect-URI werden für den Device-Login nicht benötigt. Berechtigungen wie oben
 (`Notes.ReadWrite`, `offline_access`, `User.Read`, optional `Files.ReadWrite`). Nach dem Speichern ein paar Minuten warten.
@@ -115,8 +128,9 @@ im Credential; sobald der Workflow gelegentlich läuft, bleibt der Login bestehe
 Azure only allows `http://` for `localhost`; everything else needs HTTPS with a hostname (no IP address). n8n builds the
 redirect URL from `N8N_EDITOR_BASE_URL`; it cannot be changed in a credential or node. Options:
 
-- **Device login (recommended):** no redirect URI at all. In Azure add the platform *Mobile and desktop applications* (nativeclient URI) and enable *Authentication → Advanced settings →
-  Allow public client flows = Yes*. In n8n run the **OneNote Login Helper** node (*Start Login*, open the address, enter the code,
+- **Device login (recommended):** no redirect URI at all. In Azure (*Authentication*) add the platform *Mobile and desktop applications* (nativeclient URI) and set *Allow public client
+  flows = Yes* (new portal: tab *Settings*; old portal: *Advanced settings* at the bottom; or `allowPublicClient: true` in the
+  manifest). In n8n run the **OneNote Login Helper** node (*Start Login*, open the address, enter the code,
   *Finish Login*), put the refresh token and client ID into the credential **OneNote Device Login API**, and select
   *Authentication: Device Login* in the OneNote nodes. Delete the login execution afterwards.
 - **SSH tunnel for the first login:** `ssh -L 5678:localhost:5678 user@server`, set `N8N_EDITOR_BASE_URL=http://localhost:5678`
