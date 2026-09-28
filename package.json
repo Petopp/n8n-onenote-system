@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-onenote-system",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "n8n community nodes for Microsoft OneNote (personal accounts): notebooks, sections, pages, images, audio, files and videos - read and write, plus a polling trigger.",
   "keywords": [
     "n8n-community-node-package",
@@ -44,11 +44,13 @@
     "n8nNodesApiVersion": 1,
     "strict": true,
     "credentials": [
-      "dist/credentials/OneNoteOAuth2Api.credentials.js"
+      "dist/credentials/OneNoteOAuth2Api.credentials.js",
+      "dist/credentials/OneNoteDeviceApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/OneNote/OneNote.node.js",
-      "dist/nodes/OneNote/OneNoteTrigger.node.js"
+      "dist/nodes/OneNote/OneNoteTrigger.node.js",
+      "dist/nodes/OneNote/OneNoteLogin.node.js"
     ]
   },
   "devDependencies": {

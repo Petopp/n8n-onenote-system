@@ -106,8 +106,37 @@ export class OneNote implements INodeType {
 		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
-		credentials: [{ name: 'oneNoteOAuth2Api', required: true }],
+		credentials: [
+			{
+				name: 'oneNoteOAuth2Api',
+				required: true,
+				displayOptions: { show: { authentication: ['oAuth2'] } },
+			},
+			{
+				name: 'oneNoteDeviceApi',
+				required: true,
+				displayOptions: { show: { authentication: ['deviceLogin'] } },
+			},
+		],
 		properties: [
+			{
+				displayName: 'Authentication',
+				name: 'authentication',
+				type: 'options',
+				options: [
+					{
+						name: 'OAuth2 (Redirect Login)',
+						value: 'oAuth2',
+						description: 'Standard n8n login. Needs a redirect URL registered in Azure (HTTPS or localhost).',
+					},
+					{
+						name: 'Device Login (No Redirect URL)',
+						value: 'deviceLogin',
+						description: 'For n8n on a LAN IP or without HTTPS. Use the OneNote Login Helper node once.',
+					},
+				],
+				default: 'oAuth2',
+			},
 			{
 				displayName: 'Resource',
 				name: 'resource',

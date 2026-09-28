@@ -9,7 +9,6 @@ import type {
 } from 'n8n-workflow';
 import { NodeApiError, sleep } from 'n8n-workflow';
 
-export const CREDENTIAL_NAME = 'oneNoteOAuth2Api';
 export const GRAPH_URL = 'https://graph.microsoft.com/v1.0';
 
 type Ctx = IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions | IPollFunctions;
@@ -32,6 +31,16 @@ export interface GraphRequest {
 }
 
 const MAX_RETRIES = 4;
+
+/** Credential type selected in the node's "Authentication" parameter. */
+function credentialName(ctx: Ctx): string {
+	const get = ctx.getNodeParameter.bind(ctx) as (...args: unknown[]) => unknown;
+	// IExecuteFunctions takes (name, itemIndex, fallback); poll/load-options take (name, fallback)
+	const auth = ('getInputData' in ctx
+		? get('authentication', 0, 'oAuth2')
+		: get('authentication', 'oAuth2')) as string;
+	return auth === 'deviceLogin' ? 'oneNoteDeviceApi' : 'oneNoteOAuth2Api';
+}
 
 interface HttpError {
 	httpCode?: string;
@@ -75,7 +84,7 @@ export async function graphRequest(this: Ctx, req: GraphRequest): Promise<any> {
 		try {
 			const response = await this.helpers.httpRequestWithAuthentication.call(
 				this,
-				CREDENTIAL_NAME,
+				credentialName(this),
 				options,
 			);
 			if (req.binary && response.body && !Buffer.isBuffer(response.body)) {

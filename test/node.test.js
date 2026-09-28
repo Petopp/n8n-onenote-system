@@ -11,6 +11,7 @@ function makeCtx(params, items, responder, extra = {}) {
 		getNode: () => ({ name: 'OneNote', type: 'x', typeVersion: 1, position: [0, 0], parameters: {} }),
 		getNodeParameter: (name, _i, fallback) => {
 			// trigger passes (name, fallback, opts); execute passes (name, i, fallback, opts)
+			if (name === 'authentication') return 'oAuth2';
 			return name in params ? params[name] : fallback;
 		},
 		continueOnFail: () => false,
@@ -131,4 +132,65 @@ test('trigger returns new pages and advances checkpoint', async () => {
 	assert.strictEqual(out[0][0].json.notebookName, 'NB');
 	assert.strictEqual(staticData.lastTimeChecked, '2026-01-03T00:00:00Z');
 	assert.strictEqual(ctx.calls[0].qs.$filter, 'createdDateTime gt 2026-01-01T00:00:00.000Z');
+});
+
+test('device login credential refreshes token and keeps rotated refresh token', async () => {
+	const { OneNoteDeviceApi } = require('../dist/credentials/OneNoteDeviceApi.credentials');
+	let request;
+	const helper = {
+		helpers: {
+			httpRequest: async (o) => {
+				request = o;
+				return { access_token: 'AT', refresh_token: 'RT2' };
+			},
+		},
+	};
+	const out = await new OneNoteDeviceApi().preAuthentication.call(helper, {
+		clientId: 'cid',
+		tenant: 'consumers',
+		refreshToken: 'RT1',
+		enableOneDrive: true,
+	});
+	assert.deepStrictEqual(out, { accessToken: 'AT', refreshToken: 'RT2' });
+	assert.match(request.url, /login\.microsoftonline\.com\/consumers\/oauth2\/v2\.0\/token$/);
+	assert.match(request.body, /grant_type=refresh_token/);
+	assert.match(request.body, /Files\.ReadWrite/);
+});
+
+test('node picks device credential when selected', async () => {
+	const used = [];
+	const ctx = makeCtx({ resource: 'notebook', operation: 'getAll', returnAll: true, authentication: 'deviceLogin' }, [{ json: {} }], async () => ({ value: [] }));
+	ctx.getNodeParameter = (name, _i, fb) => (name === 'authentication' ? 'deviceLogin' : name === 'returnAll' ? true : name === 'resource' ? 'notebook' : name === 'operation' ? 'getAll' : fb);
+	const orig = ctx.helpers.httpRequestWithAuthentication;
+	ctx.helpers.httpRequestWithAuthentication = async (cred, o) => (used.push(cred), orig(cred, o));
+	await new OneNote().execute.call(ctx);
+	assert.deepStrictEqual(used, ['oneNoteDeviceApi']);
+});
+
+test('login helper: start returns codes, finish returns refresh token', async () => {
+	const { OneNoteLogin } = require('../dist/nodes/OneNote/OneNoteLogin.node');
+	const mk = (params, responder) => ({
+		getNode: () => ({ name: 'L' }),
+		getNodeParameter: (n) => params[n],
+		helpers: { httpRequest: async (o) => responder(o) },
+	});
+	const [[start]] = await new OneNoteLogin().execute.call(
+		mk({ operation: 'start', clientId: 'c', tenant: 'consumers', enableOneDrive: false }, () => ({
+			verification_uri: 'https://microsoft.com/devicelogin',
+			user_code: 'ABCD',
+			device_code: 'DEV',
+			expires_in: 900,
+		})),
+	);
+	assert.strictEqual(start.json.userCode, 'ABCD');
+	const [[fin]] = await new OneNoteLogin().execute.call(
+		mk({ operation: 'finish', clientId: 'c', tenant: 'consumers', enableOneDrive: false, deviceCode: 'DEV', waitSeconds: 0 }, () => ({ refresh_token: 'RT' })),
+	);
+	assert.strictEqual(fin.json.refreshToken, 'RT');
+	await assert.rejects(
+		new OneNoteLogin().execute.call(
+			mk({ operation: 'finish', clientId: 'c', tenant: 'consumers', enableOneDrive: false, deviceCode: 'DEV', waitSeconds: 0 }, () => ({ error: 'authorization_pending' })),
+		),
+		/Not confirmed yet/,
+	);
 });
